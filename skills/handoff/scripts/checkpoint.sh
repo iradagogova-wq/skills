@@ -23,6 +23,23 @@ if [ ! -f "$state" ]; then
   exit 1
 fi
 
+# A gitignored state file is the quiet failure mode of this whole scheme: it exists
+# locally, never reaches the remote, and the next session finds nothing. Plenty of
+# repos ignore .claude/ wholesale, so check before trusting the commit.
+if git check-ignore -q "$state"; then
+  {
+    echo "checkpoint: $state is gitignored — it would never reach the remote."
+    echo "checkpoint: fix the pattern in .gitignore:"
+    echo
+    echo "    .claude/*"
+    echo "    !.claude/handoff/"
+    echo
+    echo "checkpoint: git cannot re-include a file whose parent directory is excluded,"
+    echo "checkpoint: so a bare '.claude/' has to become '.claude/*' for this to work."
+  } >&2
+  exit 1
+fi
+
 branch=$(git rev-parse --abbrev-ref HEAD)
 if [ "$branch" = "HEAD" ]; then
   echo "checkpoint: detached HEAD — check out a branch before checkpointing" >&2

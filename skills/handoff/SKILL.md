@@ -90,6 +90,10 @@ public.
 - **Commit work-in-progress as a real WIP commit** on your branch before checkpointing. `git stash`
   is not a handoff: a stash is local, invisible to the next container, and shared across worktrees,
   so it can silently swallow another session's changes.
+- **Check that `.claude/` is not gitignored** before the first checkpoint in a repo. Many repos
+  ignore it wholesale, and then the state file lives and dies on one machine while everything looks
+  fine. `scripts/checkpoint.sh` refuses to continue in that case and prints the two-line `.gitignore`
+  fix.
 - **Respect the host repo's commit conventions.** Some repos forbid AI-attribution trailers in
   commit messages; `scripts/checkpoint.sh` adds none.
 
