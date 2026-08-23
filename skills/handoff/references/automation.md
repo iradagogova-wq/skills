@@ -104,8 +104,14 @@ handoff is what crosses machines — which is the case that actually happens aft
 
 ## Installing the skill itself
 
-```bash
-npx skills add iradagogova-wq/skills@handoff -g -y
-```
+Where the skill has to live depends on which session is supposed to find it — a fresh cloud
+container has no home directory from yesterday, which is the same reason this skill exists.
 
-`-g` installs it at user level, so it is available in every project rather than in one checkout.
+| Where you work | Install |
+| --- | --- |
+| Claude Code CLI on your own machine | `npx skills add iradagogova-wq/skills@handoff -g -y` — `-g` puts it in `~/.claude/skills/`, so every project sees it |
+| Claude Code on the web / phone | Upload the packaged `handoff.skill` in claude.ai settings. Account-level skills load in every session, including brand-new containers |
+| One specific repository | Commit it to `<repo>/.claude/skills/handoff/`. It then travels with the clone — check the repo does not gitignore `.claude/` first |
+
+The repository install pairs naturally with the SessionStart hook above: both live in `.claude/`,
+both are committed, and together they make a clone of the repo enough to resume the work.
